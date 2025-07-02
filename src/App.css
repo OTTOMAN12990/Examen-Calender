@@ -12,7 +12,7 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2emrgba(100, 255, 229, 0.67));
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
@@ -40,3 +40,191 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Achtergrond met animatie */
+.calendar-container {
+  background: linear-gradient(150deg,rgb(0, 255, 195),rgb(0, 0, 0),rgb(0, 255, 183),rgb(0, 0, 0));
+  background-size: 600% 600%;
+  animation: gradientMove 20s ease infinite;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes gradientMove {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+
+/* Event items */
+.rbc-event {
+  transition: transform 0.6s ease, box-shadow 0.1s ease, background-color 0.6s ease;
+  cursor: pointer;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.rbc-event:hover {
+  background-color:rgb(100, 163, 202) !important; /* Of pas aan naar je accentkleur */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+  transform: scale(1.05);
+}
+
+/* Klik animatie */
+.rbc-event:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(133, 133, 133, 0.2);
+}
+
+/* Knoppen styling */
+button {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  background-color:rgb(63, 101, 158);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(88, 88, 88, 0.4);
+}
+
+button:hover {
+  background-color:rgb(84, 126, 255);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 8px rgba(255, 255, 255, 0.5);
+}
+
+body {
+  background: linear-gradient(150deg,rgb(0, 0, 0),rgb(37, 112, 173),rgb(0, 0, 0),rgb(0, 68, 255));
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+    font-family: 'Roboto', sans-serif;
+}
+
+@keyframes gradientShift {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+button, .rbc-event {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+button:hover, .rbc-event:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+button:active, .rbc-event:active {
+  transform: scale(0.95);
+}
+
+/* 1. Bewegende gradient achtergrond */
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #6a11cb, #2575fc, #6a11cb, #2575fc);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes gradientShift {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+/* 2. Hover & klik animaties voor buttons */
+button {
+  font-family: 'Roboto', sans-serif;
+  background-color: #2575fc;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  margin-top: 10px;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1a5edb;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* 3. Hover & klik animaties voor agenda events */
+.rbc-event {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border-radius: 8px !important; /* rbc geeft standaard vaak scherpe hoeken */
+}
+
+.rbc-event:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.rbc-event:active {
+  transform: scale(0.95);
+}
+
+/* 4. Fonts en body styling */
+body, #root {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  color: #
+}
+  /* Ripple effect container */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ripple circle */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.5);
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 1;
+  animation: rippleEffect 0.6s linear forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+

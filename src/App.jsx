@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import format from "date-fns/format";
@@ -9,60 +9,73 @@ import { nl } from "date-fns/locale";
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './App.css';
 import AddEventPage from "./components/AddEventPage";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
+
 const locales = { 'nl': nl };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
 const App = () => {
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Test-afspraak",
-      start: new Date(2025, 7, 13, 12, 0),
-      end: new Date(2025, 7, 13, 13, 0),
-      category: "urgent"
-    },
-    {
-      id: 2,
-      title: "Andere afspraak",
-      start: new Date(2025, 7, 13, 14, 0),
-      end: new Date(2025, 7, 13, 15, 0),
-      category: "ontspanning"
-    },
-    {
-      id: 3,
-      title: "Andere afspraak",
-      start: new Date(2025, 7, 15, 18, 0),
-      end: new Date(2025, 7, 13, 15, 0),
-      category: "normaal"
-    },
-  ]);
 
-  return (
-    <Routes>
-      <Route path="/" element={<CalendarPage events={events} setEvents={setEvents} />} />
-      <Route path="/day/:date" element={<DayDetailPage events={events} setEvents={setEvents} />} />
-      <Route path="/day/:date/add" element={<AddEventPage events={events} setEvents={setEvents} />} />
-      <Route path="/event/:id" element={<EventDetailPage events={events} setEvents={setEvents} />} />
-    </Routes>
+  const location = useLocation();
+  const [events, setEvents] = useState(() => {
+    const saved = localStorage.getItem("mijn_agenda_events");
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    return parsed.map((event) => ({
+      ...event,
+      start: new Date(event.start),
+      end: new Date(event.end),
+    }));
+  });
+
+  useEffect(() => {
+    localStorage.setItem("mijn_agenda_events", JSON.stringify(events));
+  }, [events]);
+
+ return (
+    <AnimatePresence exitBeforeEnter>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<CalendarPage events={events} setEvents={setEvents} />} />
+        <Route path="/day/:date" element={<DayDetailPage events={events} setEvents={setEvents} />} />
+        <Route path="/day/:date/add" element={<AddEventPage events={events} setEvents={setEvents} />} />
+        <Route path="/event/:id" element={<EventDetailPage events={events} setEvents={setEvents} />} />
+      </Routes>
+    </AnimatePresence>
   );
+};
+
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  in: { opacity: 1, y: 0 },
+  out: { opacity: 0, y: -20 }
+};
+
+const pageTransition = {
+  type: "tween",
+  ease: "anticipate",
+  duration: 0.4
 };
 
 const CalendarPage = ({ events, setEvents }) => {
   const navigate = useNavigate();
 
+  const [view, setView] = useState("month");
+  const [date, setDate] = useState(new Date());
+
   const handleAddEvent = (e) => {
     e.preventDefault();
     const form = e.target;
     const title = form.title.value;
-    const date = form.date.value;
+    const dateStr = form.date.value;
     const startTime = form.startTime.value;
     const endTime = form.endTime.value;
 
-    const start = new Date(date + "T" + startTime);
-    const end = new Date(date + "T" + endTime);
+    const start = new Date(dateStr + "T" + startTime);
+    const end = new Date(dateStr + "T" + endTime);
 
     const newEvent = {
-      id: Math.random(), // eenvoudige id
+      id: Math.random(),
       title,
       start,
       end,
@@ -73,80 +86,100 @@ const CalendarPage = ({ events, setEvents }) => {
   };
 
   return (
-    <div>
-      <h1 style={{ textAlign: "center" }}>Mijn Agenda</h1>
+    <motion.div
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={pageVariants}
+      transition={pageTransition}
+    >
+      <div className="calendar-container">
+        <h1 style={{ textAlign: "center", color: "white", marginBottom: "20px" }}>Mijn Agenda</h1>
 
-      <form onSubmit={handleAddEvent} style={{ display: "flex", flexDirection: "column", maxWidth: "300px", margin: "auto" }}>
-        <input type="text" name="title" placeholder="Title" required />
-        <input type="date" name="date" required />
-        <input type="time" name="startTime" required />
-        <input type="time" name="endTime" required />
-        <button type="submit" style={{ marginTop: "10px" }}>Add Event</button>
-      </form>
+        <form onSubmit={handleAddEvent} style={{ display: "flex", flexDirection: "column", maxWidth: "300px", margin: "auto" }}>
+          <input type="text" name="title" placeholder="Title" required />
+          <input type="date" name="date" required />
+          <input type="time" name="startTime" required />
+          <input type="time" name="endTime" required />
+          <button type="submit" style={{ marginTop: "10px" }}>Add Event</button>
+        </form>
 
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500, margin: "50px" }}
-        selectable={true}
-        onSelectEvent={(event) => navigate(`/event/${event.id}`)}
-        onSelectSlot={(slotInfo) => {
-          const dateStr = slotInfo.start.toISOString().split("T")[0];
-          navigate(`/day/${dateStr}`);
-        }}
-eventPropGetter={(event) => {
-  let backgroundColor = "#3174ad"; // standaard
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          selectable={true}
+          date={date}
+          view={view}
+          onNavigate={(newDate) => setDate(newDate)}
+          onView={(newView) => setView(newView)}
+          onSelectEvent={(event) => navigate(`/event/${event.id}`)}
+          onSelectSlot={(slotInfo) => {
+            const dateStr = slotInfo.start.toISOString().split("T")[0];
+            navigate(`/day/${dateStr}`);
+          }}
+          eventPropGetter={(event) => {
+            let backgroundColor = "#3174ad";
 
-  if (event.category === "urgent") backgroundColor = "#ff4d4d";
-  else if (event.category === "ontspanning") backgroundColor = "#4caf50";
-  else if (event.category === "normaal") backgroundColor = "#2196f3";
+            if (event.category === "urgent") backgroundColor = "#ff4d4d";
+            else if (event.category === "ontspanning") backgroundColor = "#4caf50";
+            else if (event.category === "normaal") backgroundColor = "#2196f3";
 
-  return {
-    style: {
-      backgroundColor,
-      borderRadius: "5px",
-      color: "white",
-      border: "none",
-      padding: "5px"
-    },
-  };
-}}
-      />
-    </div>
+            return {
+              style: {
+                backgroundColor,
+                borderRadius: "8px",
+                color: "white",
+                border: "none",
+                padding: "5px",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                transition: "all 0.2s ease"
+              },
+            };
+          }}
+        />
+      </div>
+    </motion.div>
   );
 };
-
 const DayDetailPage = ({ events, setEvents }) => {
   const { date } = useParams();
   const navigate = useNavigate();
 
-  // filter events voor die dag
   const dayEvents = events.filter(
     (event) =>
       event.start.toISOString().split("T")[0] === date 
   );
 
   return (
-    <div>
-      <h2>Afspraak overzicht voor: {date}</h2>
-      <button onClick={() => navigate("/")}>Terug naar kalender</button>
-      <ul>
-        {dayEvents.length === 0 && <li>Geen afspraken op deze dag</li>}
-        {dayEvents.map((event) => (
-          <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{ cursor: "pointer", marginBottom: "10px" }}>
-            {event.title} van {event.start.toLocaleTimeString()} tot {event.end.toLocaleTimeString()}
-          </li>
-        ))}
-      </ul>
-      <button onClick={() => navigate(`/day/${date}/add`)}>+ Nieuwe afspraak toevoegen</button>
-      {/* Hier kun je een formulier of nieuwe route maken voor toevoegen */}
-    </div>
+    <motion.div
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={pageVariants}
+      transition={pageTransition}
+    >
+      <div>
+        <h2>Afspraak overzicht voor: {date}</h2>
+        <button onClick={() => navigate("/")}>Terug naar kalender</button>
+        <ul>
+          {dayEvents.length === 0 && <li>Geen afspraken op deze dag</li>}
+          {dayEvents.map((event) => (
+            <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{ cursor: "pointer", marginBottom: "10px" }}>
+              {event.title} van {event.start.toLocaleTimeString()} tot {event.end.toLocaleTimeString()}
+            </li>
+          ))}
+        </ul>
+        <button onClick={() => navigate(`/day/${date}/add`)}>+ Nieuwe afspraak toevoegen</button>
+      </div>
+    </motion.div>
   );
 };
 
-const EventDetailPage = ({ events, setEvents}) => {
+
+const EventDetailPage = ({ events, setEvents }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const event = events.find((e) => e.id.toString() === id);
@@ -160,7 +193,7 @@ const EventDetailPage = ({ events, setEvents}) => {
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    
+
     const updatedEvent = {
       ...event,
       title,
@@ -169,12 +202,12 @@ const EventDetailPage = ({ events, setEvents}) => {
       category,
     };
 
-    const updatedEvents = events.map ((e) => (e.id === event.id ? updatedEvent : e));
+    const updatedEvents = events.map((e) => (e.id === event.id ? updatedEvent : e));
     setEvents(updatedEvents);
     navigate(-1);
   };
 
-return (
+  return (
     <div>
       <h2>Bewerk afspraak</h2>
       <form onSubmit={handleUpdate} style={{ display: "flex", flexDirection: "column", maxWidth: "300px" }}>
@@ -209,7 +242,29 @@ return (
         <button type="submit" style={{ marginTop: "10px" }}>Opslaan</button>
       </form>
       <button onClick={() => navigate(-1)} style={{ marginTop: "10px" }}>Annuleren</button>
+      <button
+        onClick={() => {
+          const confirmed = confirm("Weet je zeker dat je deze afspraak wilt verwijderen");
+          if (confirmed) {
+            const updatedEvents = events.filter((e) => e.id !== event.id);
+            setEvents(updatedEvents);
+            navigate("/");
+          }
+        }}
+        style={{
+          marginTop: "10px",
+          backgroundColor: "crimson",
+          color: "white",
+          border: "none",
+          padding: "10px",
+          borderRadius: "5px",
+          cursor: "pointer"
+        }}
+      >
+        Verwijder afspraak
+      </button>
     </div>
   );
 };
+
 export default App;
