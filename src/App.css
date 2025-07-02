@@ -188,10 +188,18 @@ button:active {
 }
 
 /* 4. Fonts en body styling */
-body, #root {
-  margin: 0;
+body {
+  background: linear-gradient(150deg, rgb(0, 0, 0), rgb(37, 112, 173), rgb(0, 0, 0), rgb(0, 68, 255));
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   font-family: 'Roboto', sans-serif;
-  color: #
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+
+  top: 0;
+  left: 0;
+  z-index: 0;       /* onder alle content */
 }
   /* Ripple effect container */
 .ripple {
@@ -228,3 +236,7 @@ body, #root {
   }
 }
 
+.rbc-day-bg.rbc-today {
+  background-color: rgba(255, 255, 255, 0.05); /* of een lichtere blauwe tint */
+  border: 2px solid rgb(255, 204, 0);
+}

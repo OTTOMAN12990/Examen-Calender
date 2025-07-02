@@ -54,7 +54,7 @@ const pageVariants = {
 const pageTransition = {
   type: "tween",
   ease: "anticipate",
-  duration: 0.4
+  duration: 1
 };
 
 const CalendarPage = ({ events, setEvents }) => {
