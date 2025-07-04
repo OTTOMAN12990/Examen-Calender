@@ -66,7 +66,8 @@ const CalendarPage = ({ events, setEvents }) => {
   const handleAddEvent = (e) => {
     e.preventDefault();
     const form = e.target;
-    const title = form.title.value;
+    const emoji = form.emoji.value;
+    const title = `${emoji} ${form.title.value}`;
     const dateStr = form.date.value;
     const startTime = form.startTime.value;
     const endTime = form.endTime.value;
@@ -96,13 +97,26 @@ const CalendarPage = ({ events, setEvents }) => {
       <div className="calendar-container">
         <h1 style={{ textAlign: "center", color: "white", marginBottom: "20px" }}>Mijn Agenda</h1>
 
-        <form onSubmit={handleAddEvent} style={{ display: "flex", flexDirection: "column", maxWidth: "300px", margin: "auto" }}>
-          <input type="text" name="title" placeholder="Title" required />
-          <input type="date" name="date" required />
-          <input type="time" name="startTime" required />
-          <input type="time" name="endTime" required />
-          <button type="submit" style={{ marginTop: "10px" }}>Add Event</button>
-        </form>
+<form onSubmit={handleAddEvent} style={{ display: "flex", flexDirection: "column", maxWidth: "300px", margin: "auto", gap: "8px" }}>
+  <div style={{ display: 'flex', gap: '8px' }}>
+    <select name="emoji" defaultValue="🗓️" style={{ flex: 1 }}>
+      <option value="🗓️">🗓️</option>
+      <option value="💼">💼 Werk</option>
+      <option value="🏋️‍♂️">🏋️‍♂️ Sport</option>
+      <option value="📞">📞 Bellen</option>
+      <option value="🎉">🎉 Feest</option>
+      <option value="💊">💊 Gezondheid</option>
+      <option value="📚">📚 Studeren</option>
+      <option value="🧘">🧘 Ontspanning</option>
+      <option value="🛒">🛒 Boodschappen</option>
+    </select>
+    <input type="text" name="title" placeholder="Titel van afspraak" required style={{ flex: 3 }} />
+  </div>
+  <input type="date" name="date" required />
+  <input type="time" name="startTime" required />
+  <input type="time" name="endTime" required />
+  <button type="submit" style={{ marginTop: "10px" }}>Add Event</button>
+</form>
 
         <Calendar
           localizer={localizer}
