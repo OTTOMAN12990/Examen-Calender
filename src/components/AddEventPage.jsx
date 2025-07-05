@@ -22,7 +22,7 @@ const newEvent = {
   start,
   end,
   category,
-};
+}; 
 
     setEvents([...events, newEvent]);
     navigate(`/day/${date}`);

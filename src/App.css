@@ -43,9 +43,9 @@
 
 /* Achtergrond met animatie */
 .calendar-container {
-  background: linear-gradient(150deg,rgb(0, 255, 195),rgb(0, 0, 0),rgb(0, 255, 183),rgb(0, 0, 0));
-  background-size: 600% 600%;
-  animation: gradientMove 20s ease infinite;
+  background: linear-gradient(110deg,rgb(0, 255, 195),#393939,rgb(0, 187, 255),rgb(57, 57, 57));
+  background-size: 1000% 1000%;
+  animation: gradientMove 15s ease infinite;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -189,7 +189,7 @@ button:active {
 
 /* 4. Fonts en body styling */
 body {
-  background: linear-gradient(150deg, rgb(0, 0, 0), rgb(37, 112, 173), rgb(0, 0, 0), rgb(0, 68, 255));
+  background: linear-gradient(150deg, rgb(57, 57, 57), rgb(37, 112, 173), rgb(57, 57, 57), rgb(0, 68, 255));
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
   font-family: 'Roboto', sans-serif;
